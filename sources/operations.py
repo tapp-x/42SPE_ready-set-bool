@@ -20,3 +20,9 @@ def multiplier(a: int, b: int) -> int:
         a = a << 1
         b = b >> 1
     return result
+
+def gray_code(n: int) -> int:
+    """Return the Gray code of a natural number."""
+    if n < 0:
+        raise ValueError("n must be non-negative")
+    return n ^ (n >> 1)
