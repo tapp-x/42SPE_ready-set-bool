@@ -69,3 +69,65 @@ def eval_formula(formula: str) -> bool:
 
     return stack.pop()
 
+
+def print_truth_table(formula: str):
+    """Print the truth table of a formula written in reverse Polish notation."""
+    operands = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    check_formula(formula, operands)
+
+    variables = []
+    for operand in operands:
+        if operand in formula:
+            variables.append(operand)
+
+    number_of_variables = len(variables)
+    number_of_rows = 1 << number_of_variables
+
+    # Print the table header
+    print("| " + " | ".join(variables) + " | = |")
+    print("|" + "---|" * (number_of_variables + 1))
+
+    for row_number in range(number_of_rows):
+        variable_values = {}
+
+        # Convert the row number into values for A, B, C, etc.
+        for index, variable in enumerate(variables):
+            bit_position = number_of_variables - index - 1
+            bit = (row_number >> bit_position) & 1
+            variable_values[variable] = bit == 1
+
+        # Evaluate the formula with a stack.
+        stack = []
+        for char in formula:
+            if char in variable_values:
+                stack.append(variable_values[char])
+            elif char == "!":
+                value = stack.pop()
+                stack.append(not value)
+            else:
+                right = stack.pop()
+                left = stack.pop()
+
+                if char == "&":
+                    result = left and right
+                elif char == "|":
+                    result = left or right
+                elif char == "^":
+                    result = left != right
+                elif char == ">":
+                    result = not left or right
+                elif char == "=":
+                    result = left == right
+                else:
+                    raise ValueError("Invalid formula")
+
+                stack.append(result)
+
+        formula_result = stack.pop()
+        row_values = []
+        for variable in variables:
+            row_values.append(str(int(variable_values[variable])))
+
+        print("| " + " | ".join(row_values)
+              + f" | {int(formula_result)} |")
+
