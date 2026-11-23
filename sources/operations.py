@@ -131,3 +131,46 @@ def print_truth_table(formula: str):
         print("| " + " | ".join(row_values)
               + f" | {int(formula_result)} |")
 
+
+def negation_normal_form(formula: str) -> str:
+    """Return an equivalent formula in Negation Normal Form."""
+    operands = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    check_formula(formula, operands)
+    stack = []
+
+    for char in formula:
+        if char in operands:
+            stack.append((char, char + "!"))
+        elif char == "!":
+            positive, negative = stack.pop()
+            stack.append((negative, positive))
+        else:
+            right_positive, right_negative = stack.pop()
+            left_positive, left_negative = stack.pop()
+
+            if char == "&":
+                positive = left_positive + right_positive + "&"
+                negative = left_negative + right_negative + "|"
+            elif char == "|":
+                positive = left_positive + right_positive + "|"
+                negative = left_negative + right_negative + "&"
+            elif char == ">":
+                positive = left_negative + right_positive + "|"
+                negative = left_positive + right_negative + "&"
+            elif char == "^":
+                positive = (left_positive + right_negative + "&"
+                            + left_negative + right_positive + "&|")
+                negative = (left_positive + right_positive + "&"
+                            + left_negative + right_negative + "&|")
+            elif char == "=":
+                positive = (left_positive + right_positive + "&"
+                            + left_negative + right_negative + "&|")
+                negative = (left_positive + right_negative + "&"
+                            + left_negative + right_positive + "&|")
+            else:
+                raise ValueError("Invalid formula")
+
+            stack.append((positive, negative))
+
+    return stack.pop()[0]
+
