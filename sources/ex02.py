@@ -11,9 +11,9 @@ def main():
     print(f"gray_code(7) = {gray_code(7)}")
     print(f"gray_code(8) = {gray_code(8)}")
     print(f"gray_code(9) = {gray_code(9)}")
-    print(f"gray_code(10) = {gray_code(0)}")
-    print(f"gray_code(11) = {gray_code(1)}")
-    print(f"gray_code(12) = {gray_code(2)}")
+    print(f"gray_code(10) = {gray_code(10)}")
+    print(f"gray_code(11) = {gray_code(11)}")
+    print(f"gray_code(12) = {gray_code(12)}")
 
     print("\n=== Invalid values ===")
     try:
