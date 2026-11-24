@@ -327,3 +327,40 @@ def eval_set(formula: str, sets: list[list[int]]) -> list[int]:
 
     return sorted(stack.pop())
 
+
+def map(x: int, y: int) -> float:
+    """Map two 16-bit coordinates to a unique value between 0 and 1."""
+    maximum_coordinate = (1 << 16) - 1
+    maximum_code = (1 << 32) - 1
+
+    if x < 0 or x > maximum_coordinate:
+        raise ValueError("x must fit in 16 bits")
+    if y < 0 or y > maximum_coordinate:
+        raise ValueError("y must fit in 16 bits")
+
+    code = 0
+    for bit in range(16):
+        x_bit = (x >> bit) & 1
+        y_bit = (y >> bit) & 1
+        code |= x_bit << (2 * bit)
+        code |= y_bit << (2 * bit + 1)
+
+    return code / maximum_code
+
+
+def reverse_map(value: float) -> tuple[int, int]:
+    """Return the 16-bit coordinates encoded by a mapped value."""
+    maximum_code = (1 << 32) - 1
+
+    if not 0 <= value <= 1:
+        raise ValueError("value must be between 0 and 1")
+
+    code = int(value * maximum_code + 0.5)
+    x = 0
+    y = 0
+
+    for bit in range(16):
+        x |= ((code >> (2 * bit)) & 1) << bit
+        y |= ((code >> (2 * bit + 1)) & 1) << bit
+
+    return x, y
