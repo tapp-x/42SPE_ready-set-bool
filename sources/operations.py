@@ -275,3 +275,55 @@ def powerset(set_values: list[int]) -> list[list[int]]:
 
     return result
 
+
+def eval_set(formula: str, sets: list[list[int]]) -> list[int]:
+    """Evaluate a Boolean formula with sets as its variables."""
+    operands = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    check_formula(formula, operands)
+
+    variables = []
+    for operand in operands:
+        if operand in formula:
+            variables.append(operand)
+
+    highest_variable = max(ord(variable) - ord("A") for variable in variables)
+    if len(sets) != highest_variable + 1:
+        raise ValueError("The sets must match the A-to-Z positions")
+
+    universe = set()
+    for values in sets:
+        universe.update(values)
+
+    variable_values = {}
+    for variable in variables:
+        index = ord(variable) - ord("A")
+        variable_values[variable] = set(sets[index])
+
+    stack = []
+    for char in formula:
+        if char in variable_values:
+            stack.append(variable_values[char])
+        elif char == "!":
+            stack.append(universe - stack.pop())
+        else:
+            right = stack.pop()
+            left = stack.pop()
+
+            if char == "&":
+                result = left & right
+            elif char == "|":
+                result = left | right
+            elif char == "^":
+                result = left ^ right
+            elif char == ">":
+                result = (universe - left) | right
+            elif char == "=":
+                result = (left & right) | ((universe - left)
+                                           & (universe - right))
+            else:
+                raise ValueError("Invalid formula")
+
+            stack.append(result)
+
+    return sorted(stack.pop())
+
