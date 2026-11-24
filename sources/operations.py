@@ -1,4 +1,5 @@
 from parsing import check_formula
+from utils import combine_with_or, clauses_to_formula
 
 MAX_U32 = 0xFFFFFFFF
 
@@ -173,4 +174,38 @@ def negation_normal_form(formula: str) -> str:
             stack.append((positive, negative))
 
     return stack.pop()[0]
+
+
+def conjunctive_normal_form(formula: str) -> str:
+    """Return an equivalent formula in Conjunctive Normal Form."""
+    operands = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    check_formula(formula, operands)
+    normal_formula = negation_normal_form(formula)
+    stack = []
+    index = 0
+
+    while index < len(normal_formula):
+        char = normal_formula[index]
+
+        if char in operands:
+            literal = char
+            if index + 1 < len(normal_formula):
+                if normal_formula[index + 1] == "!":
+                    literal += "!"
+                    index += 1
+            stack.append([[literal]])
+        elif char == "&":
+            right = stack.pop()
+            left = stack.pop()
+            stack.append(left + right)
+        elif char == "|":
+            right = stack.pop()
+            left = stack.pop()
+            stack.append(combine_with_or(left, right))
+        else:
+            raise ValueError("Invalid formula")
+
+        index += 1
+
+    return clauses_to_formula(stack.pop())
 
