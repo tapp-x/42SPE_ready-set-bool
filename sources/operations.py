@@ -209,3 +209,54 @@ def conjunctive_normal_form(formula: str) -> str:
 
     return clauses_to_formula(stack.pop())
 
+
+def sat(formula: str) -> bool:
+    """Return whether a Boolean formula is satisfiable."""
+    operands = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    check_formula(formula, operands)
+
+    variables = []
+    for operand in operands:
+        if operand in formula:
+            variables.append(operand)
+
+    number_of_variables = len(variables)
+    number_of_rows = 1 << number_of_variables
+
+    for row_number in range(number_of_rows):
+        variable_values = {}
+        for index, variable in enumerate(variables):
+            bit_position = number_of_variables - index - 1
+            bit = (row_number >> bit_position) & 1
+            variable_values[variable] = bit == 1
+
+        stack = []
+        for char in formula:
+            if char in variable_values:
+                stack.append(variable_values[char])
+            elif char == "!":
+                stack.append(not stack.pop())
+            else:
+                right = stack.pop()
+                left = stack.pop()
+
+                if char == "&":
+                    result = left and right
+                elif char == "|":
+                    result = left or right
+                elif char == "^":
+                    result = left != right
+                elif char == ">":
+                    result = not left or right
+                elif char == "=":
+                    result = left == right
+                else:
+                    raise ValueError("Invalid formula")
+
+                stack.append(result)
+
+        if stack.pop():
+            return True
+
+    return False
+
