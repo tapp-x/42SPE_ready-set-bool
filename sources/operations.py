@@ -63,8 +63,10 @@ def eval_formula(formula: str) -> bool:
                 result = second_pop != first_pop
             elif char == ">":
                 result = not second_pop or first_pop
-            else:
+            elif char == "=":
                 result = second_pop == first_pop
+            else:
+                raise ValueError("Invalid formula")
 
             stack.append(result)
 
