@@ -260,3 +260,18 @@ def sat(formula: str) -> bool:
 
     return False
 
+
+def powerset(set_values: list[int]) -> list[list[int]]:
+    """Return all subsets of a set of integers."""
+    result = []
+    number_of_subsets = 1 << len(set_values)
+
+    for mask in range(number_of_subsets):
+        subset = []
+        for index, value in enumerate(set_values):
+            if (mask >> index) & 1:
+                subset.append(value)
+        result.append(subset)
+
+    return result
+
