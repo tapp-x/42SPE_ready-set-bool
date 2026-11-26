@@ -86,20 +86,17 @@ def print_truth_table(formula: str):
     number_of_variables = len(variables)
     number_of_rows = 1 << number_of_variables
 
-    # Print the table header
     print("| " + " | ".join(variables) + " | = |")
     print("|" + "---|" * (number_of_variables + 1))
 
     for row_number in range(number_of_rows):
         variable_values = {}
 
-        # Convert the row number into values for A, B, C, etc.
         for index, variable in enumerate(variables):
             bit_position = number_of_variables - index - 1
             bit = (row_number >> bit_position) & 1
             variable_values[variable] = bit == 1
 
-        # Evaluate the formula with a stack.
         stack = []
         for char in formula:
             if char in variable_values:
